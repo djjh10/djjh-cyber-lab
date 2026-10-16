@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محاكاة الأمن السيبراني</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top, #321010, #090909 65%);
+  color: #eee;
+  font-family: Consolas, "Courier New", sans-serif;
+  padding: 24px;
+}
+
+.container {
+  max-width: 850px;
+  margin: 35px auto;
+  border: 1px solid #8d2525;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(12, 12, 12, .96);
+  box-shadow: 0 0 35px #8b111133;
+}
+
+.header {
+  padding: 25px;
+  text-align: center;
+  border-bottom: 1px solid #512020;
+}
+
+.icon {
+  font-size: 45px;
+  color: #ff3030;
+}
+
+h1 {
+  color: #ff3838;
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+.subtitle {
+  color: #aaa;
+  font-size: 13px;
+  direction: ltr;
+}
+
+.notice {
+  margin: 20px;
+  padding: 13px;
+  border: 1px solid #a62c2c;
+  background: #310d0d;
+  color: #ff8888;
+  text-align: center;
+  border-radius: 7px;
+}
+
+.content { padding: 0 20px 22px; }
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #ff6a6a;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.progress {
+  height: 12px;
+  background: #292020;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #8c1111, #ff4545);
+  transition: width .25s;
+  box-shadow: 0 0 12px #ff3333;
+}
+
+.terminal {
+  height: 245px;
+  overflow-y: auto;
+  background: #050505;
+  border: 1px solid #282828;
+  padding: 15px;
+  margin-top: 20px;
+  direction: ltr;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.line { color: #8cf5a0; }
+.warning { color: #ff5555; }
+.info { color: #ddd; }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+button {
+  flex: 1;
+  min-width: 140px;
+  padding: 13px;
+  border-radius: 7px;
+  border: 1px solid #ff4242;
+  color: white;
+  background: #8e1515;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover { background: #bb2020; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.secondary { background: #202020; border-color: #555; }
+
+.footer {
+  padding: 15px;
+  border-top: 1px solid #333;
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+}
+
+.safe { color: #79f69b; }
+
+@media (max-width: 500px) {
+  body { padding: 10px; }
+  .container { margin: 10px auto; }
+  h1 { font-size: 23px; }
+}
+</style>
+</head>
+<body>
+<main class="container">
+  <header class="header">
+    <div class="icon">⛨</div>
+    <h1>تنبيه أمني تجريبي</h1>
+    <div class="subtitle">CYBERSECURITY SIMULATION</div>
+  </header>
+
+  <div class="notice">
+    ⚠ وضع المحاكاة التعليمية — لا يوجد اختراق حقيقي
+  </div>
+
+  <section class="content">
+    <div class="status">
+      <span id="status">في انتظار بدء الفحص التجريبي</span>
+      <span id="percent">0%</span>
+    </div>
+
+    <div class="progress">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="terminal" id="terminal" aria-live="polite">
+      <div class="info">StudyLab Security Console</div>
+      <div class="info">هذه الواجهة تعرض أحداثًا تجريبية محلية فقط.</div>
+      <div class="line">[READY] بانتظار بدء المحاكاة...</div>
+    </div>
+
+    <div class="controls">
+      <button id="start" type="button">▶ بدء المحاكاة</button>
+      <button id="stop" class="secondary" type="button" disabled>
+        ■ إيقاف المحاكاة
+      </button>
+      <button id="reset" class="secondary" type="button">
+        ↻ إعادة ضبط
+      </button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span class="safe">● بيئة تجريبية آمنة</span>
+    <br><br>
+    لا يتم فحص الشبكة أو الوصول إلى الملفات أو إرسال أي بيانات.
+  </footer>
+</main>
+
+<script>
+const startBtn = document.getElementById("start");
+const stopBtn = document.getElementById("stop");
+const resetBtn = document.getElementById("reset");
+const terminal = document.getElementById("terminal");
+const bar = document.getElementById("bar");
+const percent = document.getElementById("percent");
+const statusText = document.getElementById("status");
+
+const events = [
+  ["تهيئة بيئة المحاكاة المحلية", "line"],
+  ["بدء فحص تجريبي للواجهة", "line"],
+  ["عرض تنبيه أمني افتراضي", "warning"],
+  ["تحليل بيانات توضيحية غير حقيقية", "line"],
+  ["محاكاة اكتشاف حدث أمني", "warning"],
+  ["لا يوجد اتصال بخادم خارجي", "line"],
+  ["لم يتم الوصول إلى ملفات النظام", "line"],
+  ["اكتملت المحاكاة بنجاح", "line"]
+];
+
+let progress = 0;
+let timer = null;
+let running = false;
+
+function addLine(message, type = "line") {
+  const line = document.createElement("div");
+  line.className = type;
+  line.textContent = "[" + new Date().toLocaleTimeString("ar") +
+    "] " + message;
+  terminal.appendChild(line);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+function finish() {
+  clearInterval(timer);
+  timer = null;
+  running = false;
+  progress = 100;
+  bar.style.width = "100%";
+  percent.textContent = "100%";
+  statusText.textContent = "اكتملت المحاكاة";
+  addLine("النتيجة: لم يحدث أي اختراق حقيقي.", "line");
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+}
+
+function tick() {
+  if (!running) return;
+
+  progress = Math.min(progress + Math.floor(Math.random() * 8) + 3, 100);
+  bar.style.width = progress + "%";
+  percent.textContent = progress + "%";
+  statusText.textContent = "جارٍ تنفيذ الفحص التجريبي...";
+
+  const index = Math.min(
+    Math.floor(progress / 100 * events.length),
+    events.length - 1
+  );
+
+  if (progress >= 100) {
+    addLine(events[events.length - 1][0], events[events.length - 1][1]);
+    finish();
+    return;
+  }
+
+  if (progress === 3 || progress % 15 < 8) {
+    addLine(events[index][0], events[index][1]);
+  }
+}
+
+startBtn.addEventListener("click", () => {
+  if (running) return;
+
+  if (progress >= 100) {
+    progress = 0;
+    bar.style.width = "0%";
+    percent.textContent = "0%";
+  }
+
+  running = true;
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+  addLine("بدأت المحاكاة المحلية.", "warning");
+  tick();
+  timer = setInterval(tick, 650);
+});
+
+stopBtn.addEventListener("click", () => {
+  if (!running) return;
+  clearInterval(timer);
+  timer = null;
+  running = false;
+  statusText.textContent = "تم إيقاف المحاكاة";
+  addLine("أوقف المستخدم المحاكاة.", "info");
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+});
+
+resetBtn.addEventListener("click", () => {
+  clearInterval(timer);
+  timer = null;
+  running = false;
+  progress = 0;
+  bar.style.width = "0%";
+  percent.textContent = "0%";
+  statusText.textContent = "في انتظار بدء الفحص التجريبي";
+  terminal.replaceChildren();
+  addLine("تمت إعادة ضبط المحاكاة.", "line");
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+});
+</script>
+</body>
+</html>
